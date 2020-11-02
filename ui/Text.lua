@@ -1,6 +1,6 @@
 local lg = love.graphics
 
-local Font = require "Font"
+local makeText = require "Text"
 
 local Text = {}
 Text.__index = Text
@@ -11,8 +11,7 @@ function Text.create(width, height, text, font_size, event_func)
 	assert(type(width) == 'number')
 	assert(type(height) == 'number')
 	local self = setmetatable({}, Text)
-	local font = Font(font_size)
-	self.text = lg.newText(font, text)
+	self.text = makeText(text, font_size)
 	self.event_func = event_func
 	self.width = width
 	self.height = height
