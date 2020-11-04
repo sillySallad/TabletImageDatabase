@@ -55,7 +55,7 @@ local function makeTagButton(search_view, rtag, w)
 	local bh = state.config():num("SearchViewTagButtonHeight", 40)
 	local grid = ui.Grid.create()
 
-	local plus = ui.Text.create(bh, bh, '+', 24,
+	local plus = ui.Text.create(bh, bh, '+',
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				local pr = search_view:getTagPriority(rtag.entry.tag)
@@ -67,7 +67,7 @@ local function makeTagButton(search_view, rtag, w)
 	grid:addRow()
 	grid:addChild(plus)
 
-	local minus = ui.Text.create(bh, bh, '-', 24,
+	local minus = ui.Text.create(bh, bh, '-',
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				local pr = search_view:getTagPriority(rtag.entry.tag)
@@ -78,7 +78,7 @@ local function makeTagButton(search_view, rtag, w)
 	)
 	grid:addChild(minus)
 
-	local count = ui.Text.create(bh, bh, tostring(search_view:getTagPriority(rtag.entry.tag)), font_size)
+	local count = ui.Text.create(bh, bh, tostring(search_view:getTagPriority(rtag.entry.tag)))
 	grid:addChild(count)
 
 	local unknown = ui.Single.create(bh, bh,
@@ -110,13 +110,13 @@ local function makeTagButton(search_view, rtag, w)
 
 	local number_text_width = 100
 
-	local tag_name = ui.Text.create(w - bh * 5 - number_text_width, bh, rtag.entry.tag, font_size)
+	local tag_name = ui.Text.create(w - bh * 5 - number_text_width, bh, rtag.entry.tag)
 	grid:addChild(tag_name)
 
-	local number_text = ui.Text.create(number_text_width, bh, tostring(state.database():getEntryCount() - rtag.entry.known), 24)
+	local number_text = ui.Text.create(number_text_width, bh, tostring(state.database():getEntryCount() - rtag.entry.known))
 	grid:addChild(number_text)
 
-	local poke = ui.Text.create(bh, bh, "P", font_size,
+	local poke = ui.Text.create(bh, bh, "P",
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				for id, flag in rtag.entry:iterateKnown() do
@@ -155,7 +155,7 @@ local function makePageButtons(search_view, w)
 	local button_height = state.config():num("ButtonHeight", 40)
 	grid:addRow()
 
-	grid:addChild(ui.Text.create(button_height * 2, button_height, "< Prev", font_size,
+	grid:addChild(ui.Text.create(button_height * 2, button_height, "< Prev",
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				search_view.page = math.max(1, search_view.page - 4 * 3)
@@ -165,7 +165,7 @@ local function makePageButtons(search_view, w)
 		end
 	))
 
-	grid:addChild(ui.Text.create(w - button_height * 4, button_height, "Debug", 24,
+	grid:addChild(ui.Text.create(w - button_height * 4, button_height, "Debug",
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				state.debug = not state.debug
@@ -176,7 +176,7 @@ local function makePageButtons(search_view, w)
 
 	local max_page = #search_view.result_images
 	max_page = (max_page - max_page % 4) + 1
-	grid:addChild(ui.Text.create(button_height * 2, button_height, "Next >", font_size,
+	grid:addChild(ui.Text.create(button_height * 2, button_height, "Next >",
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				search_view.page = math.min(max_page, search_view.page + 4 * 3)
@@ -197,7 +197,7 @@ local function makeLeftUi(search_view, w, h)
 	local text_field_height = state.config():num("TextFieldHeight", 50)
 
 	grid:addRow()
-	grid:addChild(ui.Text.create(w, text_field_height, search_view.query_string, font_size,
+	grid:addChild(ui.Text.create(w, text_field_height, search_view.query_string,
 		function(px, py, pw, ph, event, ix, iy)
 			if event == 'tap' then
 				love.keyboard.setTextInput(true, ix - px, iy - py, pw, ph)

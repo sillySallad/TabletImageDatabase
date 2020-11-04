@@ -2,7 +2,7 @@ local state = require "state"
 local ui = require "ui"
 
 local function makeSwapPanelsButtons(view, w, h)
-	local button = ui.Text.create(100, 30, "Swap Panels", 12, function(px, py, pw, ph, event)
+	local button = ui.Text.create(100, 30, "Swap Panels", function(px, py, pw, ph, event)
 		if event == 'tap' then
 			state.swap_panels = not state.swap_panels
 			view:refreshGui()

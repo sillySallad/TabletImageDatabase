@@ -89,7 +89,7 @@ local function makeTag(tag_view, ltag, w)
 		end
 	))
 
-	grid:addChild(ui.Text.create(w - tag_height * 3, tag_height, ltag.tag, tag_font_size))
+	grid:addChild(ui.Text.create(w - tag_height * 3, tag_height, ltag.tag))
 
 	return grid
 end
@@ -187,7 +187,7 @@ local function makeTags(tag_view, w, h)
 end
 
 local function makeTextField(tag_view, w)
-	return ui.Text.create(w, tag_height, tag_view:getBufferedText(), tag_font_size,
+	return ui.Text.create(w, tag_height, tag_view:getBufferedText(),
 		function(px, py, pw, ph, event, ix, iy)
 			if event == 'tap' then
 				love.keyboard.setTextInput(true, ix - px, iy - py, pw, ph)
@@ -197,7 +197,7 @@ local function makeTextField(tag_view, w)
 end
 
 local function makeBackButton(tag_view, w)
-	return ui.Text(w, tag_height, "< Back", tag_font_size,
+	return ui.Text(w, tag_height, "< Back",
 		function (px, py, pw, ph, event)
 			if event == 'tap' then
 				tag_view:leave()

@@ -220,9 +220,9 @@ local function makeTag(image_view, ltag, w)
 		end
 	))
 
-	grid:addChild(ui.Text.create(w - tag_height * 4, tag_height, ltag.entry.tag, tag_font_size))
+	grid:addChild(ui.Text.create(w - tag_height * 4, tag_height, ltag.entry.tag))
 
-	grid:addChild(ui.Text.create(tag_height, tag_height, "E", tag_font_size,
+	grid:addChild(ui.Text.create(tag_height, tag_height, "E",
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				TagView.create(ltag.entry):enter()
@@ -257,7 +257,7 @@ local function makeLeftUi(image_view, w, h)
 
 	local back_button_height = state.config():num("BackButtonHeight", 50)
 	grid:addRow()
-	grid:addChild(ui.Text.create(w, back_button_height, "< Back", 24,
+	grid:addChild(ui.Text.create(w, back_button_height, "< Back",
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				local search_view = state.searchView()
@@ -272,8 +272,8 @@ local function makeLeftUi(image_view, w, h)
 
 	local info = ui.Grid.create()
 	do
-		local id = ui.Text.create(w, text_field_height, "id: " .. tostring(image_view.entry:getId()), tag_font_size)
-		local hash = ui.Text.create(w, text_field_height, "md5: " .. tostring(image_view.entry:getHash()), tag_font_size)
+		local id = ui.Text.create(w, text_field_height, "id: " .. tostring(image_view.entry:getId()))
+		local hash = ui.Text.create(w, text_field_height, "md5: " .. tostring(image_view.entry:getHash()))
 		info:addRow()
 		info:addChild(id)
 		info:addRow()
@@ -284,7 +284,7 @@ local function makeLeftUi(image_view, w, h)
 
 	local row = ui.Grid.create()
 	row:addRow()
-	row:addChild(ui.Text.create(w - text_field_height, text_field_height, image_view.text_field, 24,
+	row:addChild(ui.Text.create(w - text_field_height, text_field_height, image_view.text_field,
 		function(px, py, pw, ph, event, ix, iy)
 			if event == 'tap' then
 				love.keyboard.setTextInput(true, ix - px, iy - py, pw, ph)
@@ -292,7 +292,7 @@ local function makeLeftUi(image_view, w, h)
 		end
 	))
 
-	row:addChild(ui.Text.create(text_field_height, text_field_height, "+", 24,
+	row:addChild(ui.Text.create(text_field_height, text_field_height, "+",
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				local id = image_view.entry:getId()

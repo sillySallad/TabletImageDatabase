@@ -6,12 +6,14 @@ local Text = {}
 Text.__index = Text
 Text.type = "Text"
 
-function Text.create(width, height, text, font_size, event_func)
-	assert(font_size)
+function Text.create(width, height, text, event_func)
 	assert(type(width) == 'number')
 	assert(type(height) == 'number')
+	assert(type(text) == 'string')
+	assert(type(event_func) ~= 'number')
+	assert(event_func == nil or type(event_func) == 'function')
 	local self = setmetatable({}, Text)
-	self.text = makeText(text, font_size)
+	self.text = makeText(text, math.ceil(height))
 	self.event_func = event_func
 	self.width = width
 	self.height = height
@@ -21,7 +23,8 @@ end
 function Text.draw(self, w, h)
 	lg.rectangle("line", 0, 0, w, h)
 	local tw, th = self.text:getDimensions()
-	lg.draw(self.text, (w - tw) / 2, (h - th) / 2)
+	local scale = math.min(w / tw, h / th)
+	lg.draw(self.text, w / 2, h / 2, 0, scale, scale, tw / 2, th / 2)
 end
 
 function Text.getDimensions(self)
