@@ -102,15 +102,18 @@ local function setRecursive(self, id, value, seen)
 		return
 	end
 
-	local impls = self.db:getImplications(self.tag, false)
-	for tag in pairs(impls) do
-		local entry = self.db:getTag(tag)
-		setRecursive(entry, id, true, seen)
-	end
-	local impld = self.db:getImpliedBy(self.tag, true)
-	for tag in pairs(impld) do
-		local entry = self.db:getTag(tag)
-		setRecursive(entry, id, false, seen)
+	if value == true then
+		local impls = self.db:getImplications(self.tag, false)
+		for tag in pairs(impls) do
+			local entry = self.db:getTag(tag)
+			setRecursive(entry, id, true, seen)
+		end
+	elseif value == false then
+		local impld = self.db:getImpliedBy(self.tag, true)
+		for tag in pairs(impld) do
+			local entry = self.db:getTag(tag)
+			setRecursive(entry, id, false, seen)
+		end
 	end
 
 	setRaw(self, id, value)
