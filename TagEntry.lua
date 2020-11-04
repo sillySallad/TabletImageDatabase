@@ -106,13 +106,23 @@ local function setRecursive(self, id, value, seen)
 		local impls = self.db:getImplications(self.tag, false)
 		for tag in pairs(impls) do
 			local entry = self.db:getTag(tag)
-			setRecursive(entry, id, true, seen)
+			if entry then
+				setRecursive(entry, id, true, seen)
+			else
+				log.warn("%q implies broken %q, removing", self.tag, tag)
+				self:setImplies(tag, false)
+			end
 		end
 	elseif value == false then
 		local impld = self.db:getImpliedBy(self.tag, true)
 		for tag in pairs(impld) do
 			local entry = self.db:getTag(tag)
-			setRecursive(entry, id, false, seen)
+			if entry then
+				setRecursive(entry, id, false, seen)
+			else
+				log.warn("%q implies broken %q, removing", self.tag, tag)
+				self:setImplies(tag, false)
+			end
 		end
 	end
 
