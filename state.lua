@@ -54,5 +54,6 @@ end
 
 state.debug = true
 state.swap_panels = false
+state.redraw = true
 
 return state

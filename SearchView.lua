@@ -40,7 +40,7 @@ function View.draw(self)
 end
 
 function View.fireEventAt(self, ...)
-	getGui(self):fireEventAt(...)
+	return getGui(self):fireEventAt(...)
 end
 
 local function findQueryTag(self, tag)

@@ -33,7 +33,7 @@ function TagView.draw(self)
 end
 
 function TagView.fireEventAt(self, ...)
-	self:getGui():fireEventAt(...)
+	return self:getGui():fireEventAt(...)
 end
 
 function TagView.enter(self)

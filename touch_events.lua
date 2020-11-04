@@ -1,6 +1,5 @@
 local lg = love.graphics
 local lf = love.filesystem
-local li = love.image
 
 local state = require "state"
 local log = require "log"
@@ -11,7 +10,9 @@ local none = false
 local function fireEventAt(x, y, ...)
 	local view = state.currentView()
 	local w, h = lg.getDimensions()
-	view:fireEventAt(x, y, w, h, ...)
+	if view:fireEventAt(x, y, w, h, ...) then
+		state.redraw = true
+	end
 end
 
 local function tap(x, y)

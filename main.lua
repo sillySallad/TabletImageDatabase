@@ -26,16 +26,20 @@ love.keyboard.setKeyRepeat(true)
 
 require "touch_events"
 
+local canvas = lg.newCanvas(lg.getDimensions())
+
 function love.keypressed(key)
 	if key == 'escape' then
 		state.currentView():leave()
 		state.currentView():refresh()
+		state.redraw = true
 	elseif key == 'backspace' then
 		local view = state.currentView()
 		local buffer = view:getBufferedText()
 		local new = buffer:match("^(.-)[\x01-\x7F\xC0-\xFF][\x80-\xBF]*$")
 		if new then
 			view:setBufferedText(new)
+			state.redraw = true
 		end
 	end
 end
@@ -44,6 +48,7 @@ function love.textinput(text)
 	local view = state.currentView()
 	local buffer = view:getBufferedText()
 	view:setBufferedText(buffer .. text)
+	state.redraw = true
 end
 
 local debug_format = [[
@@ -60,8 +65,18 @@ local temp_text = lg.newText(font)
 function love.draw()
 	lg.setBackgroundColor(0.2, 0.2, 0.3)
 	local sw, sh = lg.getDimensions()
-	local view = state.currentView()
-	view:draw()
+
+	if state.redraw then
+		local view = state.currentView()
+		view:refreshGui()
+		lg.setCanvas(canvas)
+		lg.clear()
+		view:draw(sw, sh)
+		lg.setCanvas()
+		state.redraw = false
+	end
+
+	lg.draw(canvas)
 
 	if state.debug then
 		local st = lg.getStats()
@@ -106,6 +121,11 @@ function love.draw()
 	end
 
 	log.draw()
+end
+
+function love.resize(w, h)
+	canvas = lg.newCanvas(w, h)
+	state.redraw = true
 end
 
 function love.quit()

@@ -31,7 +31,7 @@ function ImageView.draw(self)
 end
 
 function ImageView.fireEventAt(self, ...)
-	self:getGui():fireEventAt(...)
+	return self:getGui():fireEventAt(...)
 end
 
 function ImageView.getBufferedText(self)
