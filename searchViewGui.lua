@@ -50,20 +50,12 @@ local function makeRightUi(search_view, w, h)
 	return image_grid
 end
 
-local plus_text = Text("+", font_size)
-local minus_text = Text("-", font_size)
 local unknown_text = Text("?", font_size)
 local function makeTagButton(search_view, rtag, w)
 	local bh = state.config():num("SearchViewTagButtonHeight", 40)
 	local grid = ui.Grid.create()
 
-	local plus = ui.Single.create(bh, bh,
-		function(dw, dh)
-			lg.rectangle("line", 0, 0, dw, dh)
-			local tw, th = plus_text:getDimensions()
-			local y = math.floor((dh - th) / 2)
-			lg.draw(plus_text, (dw - tw) / 2, y)
-		end,
+	local plus = ui.Text.create(bh, bh, '+', 24,
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				local pr = search_view:getTagPriority(rtag.entry.tag)
@@ -75,13 +67,7 @@ local function makeTagButton(search_view, rtag, w)
 	grid:addRow()
 	grid:addChild(plus)
 
-	local minus = ui.Single.create(bh, bh,
-		function(dw, dh)
-			lg.rectangle("line", 0, 0, dw, dh)
-			local tw, th = minus_text:getDimensions()
-			local y = math.floor((dh - th) / 2)
-			lg.draw(minus_text, (dw - tw) / 2, y)
-		end,
+	local minus = ui.Text.create(bh, bh, '-', 24,
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				local pr = search_view:getTagPriority(rtag.entry.tag)
@@ -92,16 +78,7 @@ local function makeTagButton(search_view, rtag, w)
 	)
 	grid:addChild(minus)
 
-	local count_text = lg.newText(Font(font_size))
-	local count = ui.Single.create(bh, bh,
-		function(dw, dh)
-			lg.rectangle("line", 0, 0, dw, dh)
-			count_text:set(tostring(search_view:getTagPriority(rtag.entry.tag)))
-			local tw, th = count_text:getDimensions()
-			local y = math.floor((dh - th) / 2)
-			lg.draw(count_text, (dw - tw) / 2, y)
-		end
-	)
+	local count = ui.Text.create(bh, bh, tostring(search_view:getTagPriority(rtag.entry.tag)), font_size)
 	grid:addChild(count)
 
 	local unknown = ui.Single.create(bh, bh,
@@ -133,15 +110,7 @@ local function makeTagButton(search_view, rtag, w)
 
 	local number_text_width = 100
 
-	local tag_text = Text(rtag.entry.tag, font_size)
-	local tag_name = ui.Single.create(w - bh * 5 - number_text_width, bh,
-		function(dw, dh)
-			lg.rectangle("line", 0, 0, dw, dh)
-			local tw, th = tag_text:getDimensions()
-			local y = math.floor((dh - th) / 2)
-			lg.draw(tag_text, y, y)
-		end
-	)
+	local tag_name = ui.Text.create(w - bh * 5 - number_text_width, bh, rtag.entry.tag, font_size)
 	grid:addChild(tag_name)
 
 	local number_text = ui.Text.create(number_text_width, bh, tostring(state.database():getEntryCount() - rtag.entry.known), 24)
@@ -186,16 +155,7 @@ local function makePageButtons(search_view, w)
 	local button_height = state.config():num("ButtonHeight", 40)
 	grid:addRow()
 
-	local prev_text = Text("< Prev", font_size)
-	local next_text = Text("Next >", font_size)
-
-	grid:addChild(ui.Single.create(button_height * 2, button_height,
-		function(dw, dh)
-			lg.rectangle("line", 0, 0, dw, dh)
-			prev_text:set(search_view.query_string)
-			local tw, th = prev_text:getDimensions()
-			lg.draw(prev_text, (dw - tw) / 2, (dh - th) / 2)
-		end,
+	grid:addChild(ui.Text.create(button_height * 2, button_height, "< Prev", font_size,
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				search_view.page = math.max(1, search_view.page - 4 * 3)
@@ -216,13 +176,7 @@ local function makePageButtons(search_view, w)
 
 	local max_page = #search_view.result_images
 	max_page = (max_page - max_page % 4) + 1
-	grid:addChild(ui.Single.create(button_height * 2, button_height,
-		function(dw, dh)
-			lg.rectangle("line", 0, 0, dw, dh)
-			next_text:set(search_view.query_string)
-			local tw, th = next_text:getDimensions()
-			lg.draw(next_text, (dw - tw) / 2, (dh - th) / 2)
-		end,
+	grid:addChild(ui.Text.create(button_height * 2, button_height, "Next >", font_size,
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				search_view.page = math.min(max_page, search_view.page + 4 * 3)
@@ -242,15 +196,8 @@ local function makeLeftUi(search_view, w, h)
 
 	local text_field_height = state.config():num("TextFieldHeight", 50)
 
-	local search_text = lg.newText(Font(font_size))
 	grid:addRow()
-	grid:addChild(ui.Single.create(w, text_field_height,
-		function(dw, dh)
-			lg.rectangle("line", 0, 0, dw, dh)
-			search_text:set(search_view.query_string)
-			local tw, th = search_text:getDimensions()
-			lg.draw(search_text, (dw - tw) / 2, (dh - th) / 2)
-		end,
+	grid:addChild(ui.Text.create(w, text_field_height, search_view.query_string, font_size,
 		function(px, py, pw, ph, event, ix, iy)
 			if event == 'tap' then
 				love.keyboard.setTextInput(true, ix - px, iy - py, pw, ph)
