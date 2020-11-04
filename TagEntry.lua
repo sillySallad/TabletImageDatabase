@@ -184,4 +184,18 @@ function TagEntry.iterateKnown(self)
 	return pairs(self.ids)
 end
 
+function TagEntry.getRank(self)
+	local rank = 0
+	for tag in pairs(self.db:getImpliedBy(self.tag, false)) do
+		local entry = self.db:getTag(tag)
+		if entry:getImplies(self.tag) then
+			local erank = entry:getRank()
+			if rank < erank then
+				rank = erank
+			end
+		end
+	end
+	return rank + 1
+end
+
 return TagEntry

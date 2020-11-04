@@ -94,6 +94,10 @@ local function sortTagsFunc(item1, item2)
 		return not item2.absent
 	end
 
+	if item1.rank ~= item2.rank then
+		return item1.rank > item2.rank
+	end
+
 	local tag1, tag2 = item1.entry.tag, item2.entry.tag
 	if #tag1 ~= #tag2 then
 		return #tag1 < #tag2
@@ -113,6 +117,7 @@ local function getTagList(image_view)
 		local item = {
 			entry = entry,
 			string_score = string_score,
+			rank = entry:getRank(),
 		}
 		if has == true then
 			item.present = true
