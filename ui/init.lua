@@ -16,5 +16,6 @@ add 'Center'
 add 'Single'
 add 'Text'
 add 'Over'
+add 'Button'
 
 return ui

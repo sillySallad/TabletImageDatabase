@@ -16,6 +16,8 @@ local Font = require "Font"
 
 print(collectgarbage('count'))
 
+love.math.setRandomSeed(os.time())
+
 assert(importer.importImages(
 	state.database(),
 	state.config():str("ImporterImportPath", "import"),

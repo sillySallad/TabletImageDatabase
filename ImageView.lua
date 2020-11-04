@@ -57,4 +57,10 @@ function ImageView.refreshGui(self)
 	self.gui = false
 end
 
+function ImageView.enterRandomImage(self)
+	local search_view = state.searchView()
+	search_view:refreshImages()
+	search_view:enterRandomImage()
+end
+
 return ImageView

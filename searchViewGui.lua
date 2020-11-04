@@ -165,7 +165,20 @@ local function makePageButtons(search_view, w)
 		end
 	))
 
-	grid:addChild(ui.Text.create(w - button_height * 4, button_height, "Debug",
+	local remaining_width = w - button_height * 4
+	local left_remaining_width = math.floor(remaining_width / 2)
+	local right_remaining_width = remaining_width - left_remaining_width
+
+	grid:addChild(ui.Text.create(left_remaining_width, button_height, "Random",
+		function(px, py, pw, ph, event)
+			if event == 'tap' then
+				search_view:enterRandomImage()
+				return true
+			end
+		end
+	))
+
+	grid:addChild(ui.Text.create(right_remaining_width, button_height, "Debug",
 		function(px, py, pw, ph, event)
 			if event == 'tap' then
 				state.debug = not state.debug

@@ -275,17 +275,29 @@ local function makeLeftUi(image_view, w, h)
 
 	local text_field_height = state.config():num("TextFieldHeight", 40)
 
-	local info = ui.Grid.create()
 	do
-		local id = ui.Text.create(w, text_field_height, "id: " .. tostring(image_view.entry:getId()))
-		local hash = ui.Text.create(w, text_field_height, "md5: " .. tostring(image_view.entry:getHash()))
+		local w1 = math.floor(w / 2)
+		local w4 = w - w1
+		local w3 = math.floor(w4 / 2)
+		w4 = w4 - w3
+
+		local row = ui.Grid.create()
+		row:addRow()
+		row:addChild(ui.Button.create(w1, text_field_height, "Random",
+			function() image_view:enterRandomImage() end
+		))
+		row:addChild(ui.Text.create(w3, text_field_height, "Left: " .. tostring(state.searchView():getImageCount())))
+		row:addChild(ui.Text.create(w4, text_field_height, "id: " .. tostring(image_view.entry:getId())))
+		
+		local info = ui.Grid.create()
 		info:addRow()
-		info:addChild(id)
-		info:addRow()
-		info:addChild(hash)
+		info:addChild(ui.Text.create(w, text_field_height, "md5: " .. tostring(image_view.entry:getHash())))
+
+		grid:addRow()
+		grid:addChild(row)
+		grid:addRow()
+		grid:addChild(info)
 	end
-	grid:addRow()
-	grid:addChild(info)
 
 	local row = ui.Grid.create()
 	row:addRow()

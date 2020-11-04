@@ -5,6 +5,8 @@ local state = require "state"
 
 local stringTest = require "stringTest"
 
+local ImageView = require "ImageView"
+
 local View = {}
 View.__index = View
 
@@ -206,6 +208,22 @@ end
 
 function View.refreshGui(self)
 	self.gui = false
+end
+
+function View.enterRandomImage(self)
+	local len = #self.result_images
+	if len < 1 then
+		return false
+	end
+	local index = love.math.random(1, len)
+	local entry = self.result_images[index]
+	local image_view = ImageView.create(entry, self.query_string)
+	state.setCurrentView(image_view)
+	return true
+end
+
+function View.getImageCount(self)
+	return #self.result_images
 end
 
 return View
