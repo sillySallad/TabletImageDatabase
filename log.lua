@@ -1,5 +1,6 @@
 local lg = love.graphics
 
+local state = require "state"
 local Font = require "Font"
 
 local do_traceback = false
@@ -48,8 +49,11 @@ end
 
 local step = 30
 local font = Font(step)
-local delay = 10
+local delay
 function log.draw()
+	if not delay then
+		delay = state.config():num("LogFadeDelay", 10)
+	end
 	lg.setFont(font)
 	local w, h = lg.getDimensions()
 	local y = 0
