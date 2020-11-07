@@ -7,7 +7,7 @@ ImageCache.__index = ImageCache
 
 function ImageCache.create()
 	local self = setmetatable({}, ImageCache)
-	self.capacity = state.config():num("ImageCacheCapacity", 80)
+	self.capacity = state.config():num("ImageCacheCapacity", 32)
 	self.entries = {}
 	return self
 end
