@@ -91,6 +91,10 @@ local function sortTagResults(item1, item2)
 		return not qtag2
 	end
 
+	if item1.rank ~= item2.rank then
+		return item1.rank > item2.rank
+	end
+
 	if qtag1 then
 		if qtag1.unknown ~= qtag2.unknown then
 			return qtag1.unknown
@@ -132,6 +136,7 @@ function View.refreshTags(self)
 			entry = entry,
 			string_score = string_score,
 			qtag = qtag,
+			rank = entry:getRank(),
 		}
 		table.insert(items, item)
 	end
