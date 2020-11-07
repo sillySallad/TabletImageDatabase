@@ -108,15 +108,12 @@ local function makeTagButton(search_view, rtag, w)
 	local number_text = ui.Text.create(number_text_width, bh, tostring(state.database():getEntryCount() - rtag.entry.known))
 	grid:addChild(number_text)
 
-	local poke = ui.Text.create(bh, bh, "P",
-		function(px, py, pw, ph, event)
-			if event == 'tap' then
-				for id, flag in rtag.entry:iterateKnown() do
-					rtag.entry:set(id, flag)
-				end
-				search_view:refresh()
-				return true
+	local poke = ui.Button.create(bh, bh, "P",
+		function()
+			for id, flag in rtag.entry:iterateKnown() do
+				rtag.entry:set(id, flag)
 			end
+			search_view:refresh()
 		end
 	)
 	grid:addChild(poke)
@@ -158,36 +155,36 @@ local function makePageButtons(search_view, w)
 	))
 
 	local remaining_width = w - button_height * 4
-	local left_remaining_width = math.floor(remaining_width / 2)
+	local left_remaining_width = math.floor(remaining_width * 2 / 3)
 	local right_remaining_width = remaining_width - left_remaining_width
+	local middle_remaining_width = math.floor(left_remaining_width / 2)
+	left_remaining_width = left_remaining_width - middle_remaining_width
 
-	grid:addChild(ui.Text.create(left_remaining_width, button_height, "Random",
-		function(px, py, pw, ph, event)
-			if event == 'tap' then
-				search_view:enterRandomImage()
-				return true
-			end
-		end
+	grid:addChild(ui.Button.create(left_remaining_width, button_height, "Random",
+		function() search_view:enterRandomImage() end
 	))
 
-	grid:addChild(ui.Text.create(right_remaining_width, button_height, "Debug",
-		function(px, py, pw, ph, event)
-			if event == 'tap' then
-				state.debug = not state.debug
-				return true
+	grid:addChild(ui.Button.create(middle_remaining_width, button_height, "Debug",
+		function() state.debug = not state.debug end
+	))
+
+	grid:addChild(ui.Button.create(right_remaining_width, button_height, "Poke All",
+		function()
+			for tag, entry in state.tagDatabase():iterateEntries() do
+				for id, flag in entry:iterateKnown() do
+					entry:set(id, flag)
+				end
+				search_view:refresh()
 			end
 		end
 	))
 
 	local max_page = #search_view.result_images
 	max_page = (max_page - max_page % 4) + 1
-	grid:addChild(ui.Text.create(button_height * 2, button_height, "Next >",
-		function(px, py, pw, ph, event)
-			if event == 'tap' then
-				search_view.page = math.min(max_page, search_view.page + 4 * 3)
-				search_view:refreshImages()
-				return true
-			end
+	grid:addChild(ui.Button.create(button_height * 2, button_height, "Next >",
+		function()
+			search_view.page = math.min(max_page, search_view.page + 4 * 3)
+			search_view:refreshImages()
 		end
 	))
 
