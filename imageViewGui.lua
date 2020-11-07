@@ -225,15 +225,20 @@ local function makeTag(image_view, ltag, w)
 		end
 	))
 
-	grid:addChild(ui.Text.create(w - tag_height * 4, tag_height, ltag.entry.tag))
+	grid:addChild(ui.Text.create(w - tag_height * 5, tag_height, ltag.entry.tag))
 
-	grid:addChild(ui.Text.create(tag_height, tag_height, "E",
-		function(px, py, pw, ph, event)
-			if event == 'tap' then
-				TagView.create(ltag.entry):enter()
-				return true
+	local poke = ui.Button.create(tag_height, tag_height, "P",
+		function()
+			for id, flag in ltag.entry:iterateKnown() do
+				ltag.entry:set(id, flag)
 			end
+			image_view:refresh()
 		end
+	)
+	grid:addChild(poke)
+
+	grid:addChild(ui.Button.create(tag_height, tag_height, "E",
+		function() TagView.create(ltag.entry):enter() end
 	))
 
 	return grid
