@@ -134,6 +134,7 @@ function love.quit()
 	state.database():flush()
 	state.config():flush()
 	state.tagDatabase():flush()
+	state.searchView():flush()
 end
 
 local orphans = importer.scanOrphanedImages(state.database(), "images")

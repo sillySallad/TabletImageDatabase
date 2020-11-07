@@ -1,28 +1,53 @@
 local lg = love.graphics
 
-local ui = require "ui"
+local log = require "log"
 local state = require "state"
-
 local stringTest = require "stringTest"
-
 local ImageView = require "ImageView"
+local searchViewGui = require "searchViewGui"
+local tag_name = require "tag_name"
 
 local View = {}
 View.__index = View
 
-local searchViewGui = require "searchViewGui"
+local save_filename = state.config():str("SearchViewQuerySaveFilename", "search_query.txt")
 
 function View.create(database)
 	assert(database, "View.create(): no database passed");
 	local self = setmetatable({}, View)
 
+	local query_tags = {}
+	local query_string = ""
+
+	for line in love.filesystem.lines(save_filename) do
+		local key, value = line:match("^(%w+)%=(.-)$")
+		if key == "QueryString" then
+			query_string = value
+		elseif key == "QueryTags" then
+			for item in value:gmatch("(%S+)") do
+				local name, prio, unk = item:match("^(.-)%=(%-?%d+)(%??)$")
+				if name then
+					local tag = tag_name.nameToTag(name)
+					local priority = assert(tonumber(prio))
+					local unknown = unk ~= ''
+					query_tags[tag] = {priority = priority, unknown = unknown}
+				else
+					log.error("invalid query tag %q in %s", item, save_filename)
+				end
+			end
+		else
+			log.error("invalid key %q in %s", key, save_filename)
+		end
+	end
+
 	self.gui = false
 	self.database = database
-	self.query_string = ""
+	self.query_string = query_string
 	self.result_tags = {}
-	self.query_tags = {}
+	self.query_tags = query_tags
 	self.result_images = {}
 	self.page = 1
+	self.query_dirty = false
 
 	self:refresh()
 
@@ -90,8 +115,11 @@ local function sortTagResults(item1, item2)
 end
 
 function View.setQueryString(self, str)
-	self.query_string = str
-	self:refreshTags()
+	if self.query_string ~= str then
+		self.query_string = str
+		self.query_dirty = true
+		self:refreshTags()
+	end
 end
 
 function View.refreshTags(self)
@@ -138,9 +166,12 @@ end
 
 function View.setTagPriority(self, tag, priority)
 	local qtag = getQueryTag(self, tag)
-	qtag.priority = priority
-	trimQueryTag(self, tag)
-	self:refresh()
+	if qtag.priority ~= priority then
+		qtag.priority = priority
+		self.query_dirty = true
+		trimQueryTag(self, tag)
+		self:refresh()
+	end
 end
 
 function View.refreshImages(self)
@@ -182,10 +213,14 @@ end
 function View.setTagUnknown(self, tag, unknown)
 	assert(tag)
 	local qtag = getQueryTag(self, tag)
-	qtag.unknown = unknown
-	trimQueryTag(self, tag)
-	self:refreshTags()
-	self:refreshImages()
+	unknown = not not unknown
+	if qtag.unknown ~= unknown then
+		qtag.unknown = unknown
+		self.query_dirty = true
+		trimQueryTag(self, tag)
+		self:refreshTags()
+		self:refreshImages()
+	end
 end
 
 function View.getBufferedText(self)
@@ -224,6 +259,28 @@ end
 
 function View.getImageCount(self)
 	return #self.result_images
+end
+
+function View.encode(self)
+	local t = {}
+	for tag, qtag in pairs(self.query_tags) do
+		table.insert(t, string.format(
+			"%s=%d%s",
+			tag_name.tagToName(tag),
+			qtag.priority or 0,
+			qtag.unknown and "?" or ""
+		))
+	end
+	local out = {}
+	table.insert(out, string.format("QueryString=%s\n", tag_name.tagToName(self.query_string)))
+	table.insert(out, string.format("QueryTags=%s\n", table.concat(t, " ")))
+	return table.concat(out)
+end
+
+function View.flush(self)
+	if self.query_dirty then
+		love.filesystem.write(save_filename, self:encode())
+	end
 end
 
 return View
