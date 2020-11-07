@@ -102,29 +102,49 @@ local function setRecursive(self, id, value, seen)
 		return
 	end
 
-	if value == true then
-		local impls = self.db:getImplications(self.tag, false)
-		for tag in pairs(impls) do
-			local entry = self.db:getTag(tag)
-			if entry then
-				setRecursive(entry, id, true, seen)
-			else
-				log.warn("%q implies broken %q, removing", self.tag, tag)
-				self:setImplies(tag, false)
+	local impls = self.db:getImplications(self.tag, false)
+	for tag in pairs(impls) do
+		local entry = self.db:getTag(tag)
+		if entry then
+			local val = entry:get(id)
+			if value == true then
+				val = true
+			elseif value == false then
+				--
+			elseif value == nil then
+				if val == false then
+					val = nil
+				end
 			end
-		end
-	elseif value == false then
-		local impld = self.db:getImpliedBy(self.tag, true)
-		for tag in pairs(impld) do
-			local entry = self.db:getTag(tag)
-			if entry then
-				setRecursive(entry, id, false, seen)
-			else
-				log.warn("%q implies broken %q, removing", self.tag, tag)
-				self:setImplies(tag, false)
-			end
+			setRecursive(entry, id, val, seen)
+		else
+			log.warn("%q implies broken %q, removing", self.tag, tag)
+			self:setImplies(tag, false)
 		end
 	end
+
+	local impld = self.db:getImpliedBy(self.tag, true)
+	for tag in pairs(impld) do
+		local entry = self.db:getTag(tag)
+		if entry then
+			local val = entry:get(id)
+			if value == true then
+				--
+			elseif value == false then
+				val = false
+			elseif value == nil then
+				if val == true then
+					val = nil
+				end
+			end
+			setRecursive(entry, id, val, seen)
+		else
+			log.warn("%q is implied by broken %q, removing", self.tag, tag)
+			self:setImplies(tag, false)
+		end
+	end
+
+	seen[self.tag] = false
 
 	setRaw(self, id, value)
 end
