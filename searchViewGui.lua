@@ -55,26 +55,18 @@ local function makeTagButton(search_view, rtag, w)
 	local bh = state.config():num("SearchViewTagButtonHeight", 40)
 	local grid = ui.Grid.create()
 
-	local plus = ui.Text.create(bh, bh, '+',
-		function(px, py, pw, ph, event)
-			if event == 'tap' then
-				local pr = search_view:getTagPriority(rtag.entry.tag)
-				search_view:setTagPriority(rtag.entry.tag, pr + 1)
-				return true
-			end
-		end
+	local priority = search_view:getTagPriority(rtag.entry.tag)
+
+	local plus = ui.Button.create(bh, bh, '+',
+		function() search_view:setTagPriority(rtag.entry.tag, priority + 1) end,
+		function() return priority > 0 end
 	)
 	grid:addRow()
 	grid:addChild(plus)
 
-	local minus = ui.Text.create(bh, bh, '-',
-		function(px, py, pw, ph, event)
-			if event == 'tap' then
-				local pr = search_view:getTagPriority(rtag.entry.tag)
-				search_view:setTagPriority(rtag.entry.tag, pr - 1)
-				return true
-			end
-		end
+	local minus = ui.Button.create(bh, bh, '-',
+		function() search_view:setTagPriority(rtag.entry.tag, priority - 1) end,
+		function() return priority < 0 end
 	)
 	grid:addChild(minus)
 
