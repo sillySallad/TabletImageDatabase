@@ -191,7 +191,13 @@ function View.refreshImages(self)
 
 			local has = tag_database:get(id, tag)
 
-			if (priority > 0 and not has) or (priority < 0 and has) or (qtag.unknown and has ~= nil) then
+			local a = priority > 0 and has
+			local b = priority < 0 and not has
+			local c = qtag.unknown and has == nil
+
+			local good = a or b or c
+
+			if not good then
 				allow = false
 				break
 			end
