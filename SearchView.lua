@@ -19,24 +19,26 @@ function View.create(database)
 	local query_tags = {}
 	local query_string = ""
 
-	for line in love.filesystem.lines(save_filename) do
-		local key, value = line:match("^(%w+)%=(.-)$")
-		if key == "QueryString" then
-			query_string = value
-		elseif key == "QueryTags" then
-			for item in value:gmatch("(%S+)") do
-				local name, prio, unk = item:match("^(.-)%=(%-?%d+)(%??)$")
-				if name then
-					local tag = tag_name.nameToTag(name)
-					local priority = assert(tonumber(prio))
-					local unknown = unk ~= ''
-					query_tags[tag] = {priority = priority, unknown = unknown}
-				else
-					log.error("invalid query tag %q in %s", item, save_filename)
+	if love.filesystem.getInfo(save_filename) then
+		for line in love.filesystem.lines(save_filename) do
+			local key, value = line:match("^(%w+)%=(.-)$")
+			if key == "QueryString" then
+				query_string = value
+			elseif key == "QueryTags" then
+				for item in value:gmatch("(%S+)") do
+					local name, prio, unk = item:match("^(.-)%=(%-?%d+)(%??)$")
+					if name then
+						local tag = tag_name.nameToTag(name)
+						local priority = assert(tonumber(prio))
+						local unknown = unk ~= ''
+						query_tags[tag] = {priority = priority, unknown = unknown}
+					else
+						log.error("invalid query tag %q in %s", item, save_filename)
+					end
 				end
+			else
+				log.error("invalid key %q in %s", key, save_filename)
 			end
-		else
-			log.error("invalid key %q in %s", key, save_filename)
 		end
 	end
 
