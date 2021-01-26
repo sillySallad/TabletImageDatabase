@@ -23,7 +23,7 @@ function View.create(database)
 		for line in love.filesystem.lines(save_filename) do
 			local key, value = line:match("^(%w+)%=(.-)$")
 			if key == "QueryString" then
-				query_string = value
+				query_string = tag_name.nameToTag(value)
 			elseif key == "QueryTags" then
 				for item in value:gmatch("(%S+)") do
 					local name, prio, unk = item:match("^(.-)%=(%-?%d+)(%??)$")
