@@ -50,6 +50,7 @@ function View.create(database)
 	self.result_images = {}
 	self.page = 1
 	self.query_dirty = false
+	self.order_tags_by_length = false
 
 	self:refresh()
 
@@ -82,7 +83,15 @@ local function findQueryTag(self, tag)
 	return nil, nil
 end
 
-local function sortTagResults(item1, item2)
+function View.setQueryString(self, str)
+	if self.query_string ~= str then
+		self.query_string = str
+		self.query_dirty = true
+		self:refreshTags()
+	end
+end
+
+local function sortTagResults_pre(item1, item2)
 	local score1, score2 = item1.string_score, item2.string_score
 	if score1 ~= score2 then
 		return score1 > score2
@@ -103,6 +112,15 @@ local function sortTagResults(item1, item2)
 		end
 	end
 
+	return nil
+end
+
+local function sortTagResultsPreferMostUnknown(item1, item2)
+	local flag = sortTagResults_pre(item1, item2)
+	if flag ~= nil then
+		return flag
+	end
+
 	local k1, k2 = item1.entry.known, item2.entry.known
 	if k1 ~= k2 then
 		return k1 < k2
@@ -116,12 +134,23 @@ local function sortTagResults(item1, item2)
 	return tag1 < tag2
 end
 
-function View.setQueryString(self, str)
-	if self.query_string ~= str then
-		self.query_string = str
-		self.query_dirty = true
-		self:refreshTags()
+local function sortTagResultsPreferShortName(item1, item2)
+	local flag = sortTagResults_pre(item1, item2)
+	if flag ~= nil then
+		return flag
 	end
+
+	local tag1, tag2 = item1.entry.tag, item2.entry.tag
+	if #tag1 ~= #tag2 then
+		return #tag1 < #tag2
+	end
+
+	local k1, k2 = item1.entry.known, item2.entry.known
+	if k1 ~= k2 then
+		return k1 < k2
+	end
+
+	return tag1 < tag2
 end
 
 function View.refreshTags(self)
@@ -137,7 +166,11 @@ function View.refreshTags(self)
 		}
 		table.insert(items, item)
 	end
-	table.sort(items, sortTagResults)
+	local sorter = sortTagResultsPreferMostUnknown
+	if self.order_tags_by_length then
+		sorter = sortTagResultsPreferShortName
+	end
+	table.sort(items, sorter)
 	self.result_tags = items
 	self:refreshGui()
 end
