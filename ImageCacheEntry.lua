@@ -1,7 +1,5 @@
 local lg = love.graphics
 
-local missing_image = lg.newImage("resource/missing.png")
-local unsupported_image = lg.newImage("resource/unsupported.png")
 local loading_image = lg.newImage("resource/loading.png")
 
 local ImageCacheEntry = {}
@@ -11,7 +9,7 @@ function ImageCacheEntry.create(image_cache, path)
 	local self = setmetatable({}, ImageCacheEntry)
 	self.image_cache = image_cache
 	self.path = path
-	self.image = false
+	self.image = loading_image
 	self.time = math.huge
 	return self
 end
@@ -19,6 +17,7 @@ end
 function ImageCacheEntry.getImage(self)
 	self.time = love.timer.getTime()
 	if not self.image then
+		assert(false)
 		local ok, image = pcall(love.graphics.newImage, self.path, { mipmaps=true })
 		if ok then
 			self.image = image

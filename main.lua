@@ -125,6 +125,12 @@ function love.draw()
 	log.draw()
 end
 
+function love.update(dt)
+	if state.imageCache():update() then
+		state.redraw = true
+	end
+end
+
 function love.resize(w, h)
 	canvas = lg.newCanvas(w, h)
 	state.redraw = true

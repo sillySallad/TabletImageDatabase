@@ -47,6 +47,12 @@ end
 local function makeRightUi(image_view, w, h)
 	local image = ui.Single.create(w, h,
 	function(dw, dh)
+		if state.reset_pan then
+			state.reset_pan = false
+			image_view.pan_x = 0
+			image_view.pan_y = 0
+			image_view.scale = 0 -- zero isn't actually valid, but it's fixed by the enforceBounds below
+		end
 		local image_entry = state.imageCache():get(image_view.entry:getImagePath())
 		local image = image_entry:getImage()
 		local iw, ih = image:getDimensions()
