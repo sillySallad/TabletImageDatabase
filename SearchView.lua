@@ -50,7 +50,7 @@ function View.create(database)
 	self.result_images = {}
 	self.page = 1
 	self.query_dirty = false
-	self.order_tags_by_length = false
+	self.order_tags_by = "count"
 
 	self:refresh()
 
@@ -134,6 +134,29 @@ local function sortTagResultsPreferMostUnknown(item1, item2)
 	return tag1 < tag2
 end
 
+local function sortTagResultsPreferLeastUnknown(item1, item2)
+	local flag = sortTagResults_pre(item1, item2)
+	if flag ~= nil then
+		return flag
+	end
+
+	local total = state.database():getEntryCount()
+
+	local k1, k2 = item1.entry.known, item2.entry.known
+	if k1 == total then k1 = -1 end
+	if k2 == total then k2 = -1 end
+	if k1 ~= k2 then
+		return k1 > k2
+	end
+
+	local tag1, tag2 = item1.entry.tag, item2.entry.tag
+	if #tag1 ~= #tag2 then
+		return #tag1 < #tag2
+	end
+
+	return tag1 < tag2
+end
+
 local function sortTagResultsPreferShortName(item1, item2)
 	local flag = sortTagResults_pre(item1, item2)
 	if flag ~= nil then
@@ -153,6 +176,12 @@ local function sortTagResultsPreferShortName(item1, item2)
 	return tag1 < tag2
 end
 
+local tag_sorters = {
+	length = sortTagResultsPreferShortName,
+	count = sortTagResultsPreferMostUnknown,
+	reverse = sortTagResultsPreferLeastUnknown,
+}
+
 function View.refreshTags(self)
 	local str = self.query_string:lower()
 	local items = {}
@@ -166,10 +195,8 @@ function View.refreshTags(self)
 		}
 		table.insert(items, item)
 	end
-	local sorter = sortTagResultsPreferMostUnknown
-	if self.order_tags_by_length then
-		sorter = sortTagResultsPreferShortName
-	end
+	local sorter = tag_sorters[self.order_tags_by]
+	assert(sorter, self.order_tags_by)
 	table.sort(items, sorter)
 	self.result_tags = items
 	self:refreshGui()

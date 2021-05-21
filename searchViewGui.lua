@@ -139,6 +139,18 @@ local function makeTags(search_view, w, h)
 	return grid
 end
 
+local tag_sorter_labels = {
+	count = 'ct',
+	length = 'ln',
+	reverse = 'rv',
+}
+
+local tag_sorter_rotation = {
+	count = 'length',
+	length = 'reverse',
+	reverse = 'count',
+}
+
 local function makePageButtons(search_view, w)
 	local grid = ui.Grid.create()
 	local button_height = state.config():num("ButtonHeight", 40)
@@ -168,13 +180,10 @@ local function makePageButtons(search_view, w)
 		local order_button_width = math.floor(middle_remaining_width / 3)
 		local debug_button_width = middle_remaining_width - order_button_width
 
-		local order_button_text = "ct"
-		if search_view.order_tags_by_length then
-			order_button_text = "ln"
-		end
+		local order_button_text = tag_sorter_labels[search_view.order_tags_by]
 		grid:addChild(ui.Button.create(order_button_width, button_height, order_button_text,
 			function()
-				search_view.order_tags_by_length = not search_view.order_tags_by_length
+				search_view.order_tags_by = tag_sorter_rotation[search_view.order_tags_by]
 				search_view:refreshTags()
 			end
 		))
